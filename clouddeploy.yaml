@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rippled-http
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: rippled-deployment
+    tier: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rippled-https
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    app: rippled-deployment
+    tier: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rippled-ws
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5005
+    targetPort: 5005
+  selector:
+    app: rippled-deployment
+    tier: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rippled-wss
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 6006
+    targetPort: 6006
+  selector:
+    app: rippled-deployment
+    tier: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rippled-api
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 51235
+    targetPort: 51235
+  selector:
+    app: rippled-deployment
+    tier: backend
+---
+# rippled DEPLOY
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rippled-deployment
+  labels:
+    app: rippled-deployment
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rippled-deployment
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: rippled-deployment
+        tier: backend
+    spec:
+      containers:
+      - name: rippled-deployment
+        image: xrpllabsofficial/xrpld:latest
+        # env:
+            # - name: "NODE1_PWD"
+            #   value: "/home/pwd/password.txt"
+        # volumeMounts:
+            # - name: "rippled-ethsdk"
+            #   mountPath: "/home/pwd"
+            # - name: rippled1-pv
+            #   mountPath: /home/ethereum1/geth
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        - containerPort: 5005
+        - containerPort: 6006
+        - containerPort: 51235
+      # volumes:
+      #   - name: "rippled-ethsdk"
+      #     secret:
+      #       secretName: "rippled-key"
+        # - name: rippled1-pv
+        #   persistentVolumeClaim:
+        #     claimName: rippled1-claim
