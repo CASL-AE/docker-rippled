@@ -1,0 +1,58 @@
+##
+# cloudbuild.yaml
+#
+# Usage:
+#   export COMMIT_SHA=$(git rev-parse --short HEAD)
+#   docker-compose -f docker-compose.yml -f docker-compose.gcp.yml
+##
+steps:
+
+# STATIC PREPARE
+- name: gcr.io/cloud-builders/gke-deploy
+  id: Static Prepare
+  args:
+    - prepare
+    - '--filename=$_K8S_STATIC_PATH'
+    - '--image=gcr.io/$PROJECT_ID/$_STATIC:$_K8S_VERSION'
+    - '--app=$_STATIC-app'
+    - '--version=$_K8S_VERSION'
+    - '--namespace=$_K8S_NAMESPACE'
+    # - '--annotation=$_K8S_ANNOTATIONS,gcb-build-id=$_K8S_VERSION'
+    - '--output=output/$_STATIC'
+# STATIC SAVE
+- name: gcr.io/cloud-builders/gsutil
+  id: Static Save
+  args:
+    - '-c'
+    - |-
+      if [ "$_OUTPUT_BUCKET_PATH/deploy" != "" ]
+      then
+        gsutil cp -r output/$_STATIC/suggested gs://$_OUTPUT_BUCKET_PATH/config/$_STATIC-app/$_K8S_VERSION/suggested
+        gsutil cp -r output/$_STATIC/expanded gs://$_OUTPUT_BUCKET_PATH/config/$_STATIC-app/$_K8S_VERSION/expanded
+      fi
+  entrypoint: sh
+# STATIC DEPLOY
+- name: gcr.io/cloud-builders/gke-deploy
+  id: Static Deploy
+  args:
+    - apply
+    - '--filename=output/$_STATIC/expanded'
+    - '--cluster=$_GKE_CLUSTER'
+    - '--location=$_GKE_LOCATION'
+    - '--namespace=$_K8S_NAMESPACE'
+
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _K8S_APP_NAME: 'xrpl'
+  _K8S_STATIC_PATH: 'kubernetes/deployment.yml'
+  _STATIC: 'rippled'
+  _K8S_LABELS: ''
+  _K8S_VERSION: latest
+  _OUTPUT_BUCKET_PATH: samy-dev_cloudbuild/deploy
+  _K8S_NAMESPACE: default
+  _GKE_CLUSTER: xrpl-cluster
+  _GKE_LOCATION: us-central1-c
+tags:
+  - static-app
+timeout: 1800s

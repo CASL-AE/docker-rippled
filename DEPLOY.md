@@ -25,7 +25,7 @@ gcloud beta container clusters create "xrpl-cluster" \
   --project "samy-dev" \
   --zone "us-central1-c" \
   --no-enable-basic-auth \
-  --cluster-version "1.18.15-gke.1501" \
+  --cluster-version "1.21.6-gke.1503" \
   --release-channel "regular" \
   --machine-type "e2-custom-2-2048" \
   --image-type "COS_CONTAINERD" \
@@ -114,3 +114,5 @@ docker run -d -e IPFS_PROFILE='server' \
 ```
 
 `docker image rm go-ipfs`
+
+gcr.io/samy-dev/rippled 
