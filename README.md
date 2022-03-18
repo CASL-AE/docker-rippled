@@ -123,3 +123,35 @@ docker push xrpllabsofficial/xrpld:$version
 docker tag xrpllabsofficial/xrpld:$version xrpllabsofficial/xrpld:latest
 docker push xrpllabsofficial/xrpld:latest
 ```
+
+## Setup Nginx
+
+Install Nginx
+
+`sudo apt-get install nginx`
+
+Create sites available
+
+`sudo nano /etc/nginx/sites-available/caslnpo.org`
+
+Paste `nginx.conf` contents
+
+Link sites available to sites enabled
+
+`sudo ln -s /etc/nginx/sites-available/caslnpo.org /etc/nginx/sites-enabled`
+
+Test & Restart
+
+`sudo nginx -t && sudo systemctl restart nginx`
+
+Enable Firewall && Add 80
+
+`sudo ufw enable && sudo ufw allow 80`
+
+Build Docker
+
+`docker build --tag rippled:latest .`
+
+Run Docker
+
+`docker run -dit --name rippled -p 8080:80 -v /mnt/xrpld-config/:/config/ rippled:latest`
