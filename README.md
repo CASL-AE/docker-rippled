@@ -124,6 +124,16 @@ docker tag xrpllabsofficial/xrpld:$version xrpllabsofficial/xrpld:latest
 docker push xrpllabsofficial/xrpld:latest
 ```
 
+## Setup SSL
+
+Create dhparam
+
+`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/server.key -out /etc/ssl/certs/server.crt`
+
+Create dhparam
+
+`sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048`
+
 ## Setup Nginx
 
 Install Nginx
@@ -146,7 +156,7 @@ Test & Restart
 
 Enable Firewall && Add 80
 
-`sudo ufw enable && sudo ufw allow 80`
+`sudo ufw enable && sudo ufw allow 443`
 
 Build Docker
 
