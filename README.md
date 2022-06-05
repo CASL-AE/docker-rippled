@@ -165,3 +165,6 @@ Build Docker
 Run Docker
 
 `docker run -dit --name rippled -p 8080:80 -v /mnt/xrpld-config/:/config/ rippled:latest`
+
+https://github.com/ripple/rippled/blob/develop/cfg/rippled-example.cfg
+https://xrplf.github.io/xrpl-node-configurator/#/
