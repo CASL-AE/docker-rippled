@@ -1,0 +1,95 @@
+version: '3.4'
+# --ws --wsaddr "localhost" --wsapi "eth,web3,personal,net" --wsorigins "*"
+# # geth --unlock 0x66fe3576ed1ea66f21597e7a5f0004ef119b7ce6 --password pwd/password.txt --mine --miner.gasprice 0 --config config.toml
+services:
+  # nginx:
+  #   build:
+  #     context: ./nginx
+  #     dockerfile: Dockerfile
+  #   container_name: nginx
+  #   # restart: always
+  #   ports:
+  #     - 80:8501
+  #   links:
+  #     - node1:node1
+  # HOOKS
+  xrpl:
+    image: xrpllabsofficial/xrpld-hooks-testnet
+    ports:
+      - "6005:6005"
+      - "5005:5005"
+  ipfs:
+    image: ipfs/go-ipfs
+    container_name: go-ipfs
+    environment:
+      - IPFS_PROFILE=server
+      - IPFS_PATH=/ipfsdata
+    volumes:
+      - ./data/ipfs:/ipfsdata
+    ports:
+      - "4001:4001"
+      - "8080:8080"
+      - "8081:8081"
+      - "5001:5001"
+  # node1:
+  #   build:
+  #     context: ./nodes/node1
+  #     dockerfile: Dockerfile
+  #   container_name: geth-node1
+  #   ports:
+  #     - "8501:8501"
+  #     - "30311:30311"
+  # # Uncomment if you need to persist the data on disk
+  #   volumes:
+  #     - ./nodes/node1/keystore:/home/ethereum/keystore
+  #     - ./nodes/node1/geth:/home/ethereum/geth
+  #     - ./nodes/node1/pwd/password.txt:/home/ethereum/pwd/password.txt:ro
+  #   command: >
+  #     geth --datadir /home/ethereum --syncmode 'full' --port 30311
+  #     --http --http.addr '0.0.0.0' --http.port 8501 --http.corsdomain '*' --http.vhosts '*'
+  #     --http.api 'eth,web3,personal,net'
+  #     --networkid 32414
+  #     --unlock 0xef46e8cafe1b76c92c13824cea5e2e7b1301284e
+  #     --miner.gasprice 0
+  #     --password pwd/password.txt
+  #     --mine --allow-insecure-unlock --nodiscover
+  # node2:
+  #   build:
+  #     context: ./nodes/node2
+  #     dockerfile: Dockerfile
+  #   container_name: geth-node2
+  #   ports:
+  #     - "8502:8502"
+  #     - "30312:30312"
+  #   # Uncomment if you need to persist the data on disk
+  #   volumes:
+  #     - ./nodes/node2/keystore:/home/ethereum/keystore
+  #     - ./nodes/node2/geth:/home/ethereum/geth
+  #     - ./nodes/node2/pwd/password.txt:/home/ethereum/pwd/password.txt:ro
+  #   command: >
+  #     geth --datadir /home/ethereum --syncmode 'full' --port 30312
+  #     --http --http.addr '0.0.0.0' --http.port 8502 --http.corsdomain '*' --http.vhosts '*'
+  #     --http.api 'eth,web3,personal,net'
+  #     --networkid 32414
+  #     --unlock 0x66fe3576ed1ea66f21597e7a5f0004ef119b7ce6
+  #     --miner.gasprice 0
+  #     --password pwd/password.txt
+  #     --mine --allow-insecure-unlock --nodiscover
+  # dashboard:
+  #   build:
+  #     context: ./monitoring/dashboard
+  #     dockerfile: Dockerfile
+  #   container_name: dashboard
+  #   environment:
+  #     - WS_SECRET=eth-net-stats-secret
+  #   ports:
+  #     - "3000:3000"
+  # ethnet:
+  #   build:
+  #     context: ./monitoring/api
+  #     dockerfile: Dockerfile
+  #   links:
+  #     - dashboard
+  #   container_name: ethnet
+  #   volumes:
+  #     - ./monitoring/api/app.json:/home/ethnetintel/eth-net-intelligence-api/app.json
